@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+<form action="/index" method="post">
+  <button type="submit" name="addActivity">Add activity</button>
+  <br>
+</form>
+  {{#activity}}
+    <form action="/delete" method="post">
+        <button type="submit" name="delActButton" value="{{_id}}">delete activity {{_id}}</button>
+    </form>
+        <ul>
+        <li>{{actDesc}}</li>
+        {{#actStats}}
+        <form action="/delete/stat" method="post">
+            <li> {{stat}} </li>
+            <button type="submit" name="delStatButton" value="{{_id}}" >delete stat {{_id}}</button>
+        </form>
+        {{/actStats}}
+        </ul>
+        
+    
+  {{/activity}}
+
+  
+  </body>
+</html>
