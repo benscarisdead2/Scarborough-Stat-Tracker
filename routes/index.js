@@ -46,12 +46,12 @@ router.get('/activities', function (req, res) {
             allActivities.forEach(function (elt) {
                 statModel.find({activityId: elt._id}).then(function(stats){
                     output.push(stats) 
-                    console.log(output)  
+                      
                 })
             })
-            
+            console.log(output)
             res.setHeader('Content-Type', 'application/json');
-            res.status(200).json(output);
+            res.status(200).json(output);  
         }
     })
 })
