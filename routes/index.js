@@ -30,15 +30,7 @@ const actModel = mongoose.model('activities', activitySchema)
 //  GET routers
 //
 
-router.get('/', function(req, res) {
-  actModel.find().then(function(items) {
-    res.render('index', {
-      activity: items
-    });
-  })
-})
-
-router.get('/activities', function(req, res) {
+router.get('/api/activities', function(req, res) {
   // all the activities with all their stats
   actModel.find({}).then(function(allActivities) {
     if (allActivities) {
@@ -49,7 +41,7 @@ router.get('/activities', function(req, res) {
 })
 
 
-router.get('/activities/:description', function(req, res) {
+router.get('/api/activities/:description', function(req, res) {
   let description = req.params.description.toLowerCase();
   actModel.find({activityName: description}).then(function(activity) {
     if (activity) {
@@ -63,22 +55,21 @@ router.get('/activities/:description', function(req, res) {
 //  POSTS
 //
 
-router.post('/activities/:description/stats/:statistic', function(req, res) {
+router.post('/api/activities/:description/stats/:statistic', function(req, res) {
   // find the _id for the given activity
-  actModel.findOne({
-    activityName: req.params.description.toLowerCase()
+  actModel.update({
+    activityName: req.params.description.toLowerCase() // search criteria
+  },{
+    $push:{activityStats: {statistic: req.params.statistic}} // push the new stat
   }).then(function(selectedActivity) {
     if (selectedActivity) {
-      // use the _id to store the stat
-      selectedActivity.activityStats.push({ statistic: req.params.statistic })
       res.setHeader('Content-Type', 'application/json')
       res.status(200).json(selectedActivity)
     }
   })
-
 })
 
-router.post('/activities/:description', function(req, res) {
+router.post('/api/activities/:description', function(req, res) {
   let description = req.params.description.toLowerCase();
   actModel.create({
     activityName: description
@@ -97,7 +88,7 @@ router.post('/activities/:description', function(req, res) {
 //  PUTS
 //
 
-router.put('/activities/:description/:newDescription', function(req, res) {
+router.put('/api/activities/:description/:newDescription', function(req, res) {
   let description = req.params.description.toLowerCase();
   let newDescription = req.params.newDescription.toLowerCase();
   actModel.updateOne({
@@ -116,7 +107,7 @@ router.put('/activities/:description/:newDescription', function(req, res) {
 // DELETES
 //
 
-router.delete('/activities/:description', function(req, res) {
+router.delete('/api/activities/:description', function(req, res) {
   let description = req.params.description.toLowerCase();
   actModel.deleteOne({
     activityName: description
@@ -124,6 +115,20 @@ router.delete('/activities/:description', function(req, res) {
     if (items) {
       res.setHeader('Content-Type', 'application/json')
       res.status(200).json(items)
+    }
+  })
+});
+
+router.delete('/api/activities/:description/stats/:id', function(req, res) {
+  // find the _id for the given activity
+  actModel.update({
+    activityName: req.params.description.toLowerCase() // search criteria
+  },{
+    $pull:{activityStats: {_id: req.params.id}} // push the new stat
+  }).then(function(selectedActivity) {
+    if (selectedActivity) {
+      res.setHeader('Content-Type', 'application/json')
+      res.status(200).json(selectedActivity)
     }
   })
 });
