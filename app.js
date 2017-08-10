@@ -4,6 +4,7 @@ const validator = require("express-validator");
 const mustacheExpress = require("mustache-express");
 const path = require("path");
 const routes = require("./routes/index.js");
+const basicAuth = require("express-basic-auth")
 
 // Initialze Express App
 const app = express();
@@ -24,6 +25,10 @@ app.set("view engine", "mustache");
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(validator());
+
+app.use(basicAuth({
+    users: { 'admin': 'supersecret' }
+}))
 
 // Routes
 app.use(routes);
